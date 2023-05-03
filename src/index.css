@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+   font-family: 'Roboto Condensed', sans-serif;
+   /* font-family: 'Anek Devanagari', sans-serif; */
+   color-scheme: light dark;
+   /* color: rgba(255, 255, 255, 0.87); */
+   color: #dedede;
+   /* background-color: #1f1d2b; */
+   background-color: #101014;
+   /* background-color: #242424; */
+
+   box-sizing: border-box;
+   -webkit-tap-highlight-color: transparent;
+   /* font-synthesis: none; */
+   /* text-rendering: optimizeLegibility; */
+   /* -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+   -webkit-text-size-adjust: 100%; */
+}
