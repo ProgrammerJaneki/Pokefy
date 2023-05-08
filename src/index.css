@@ -5,10 +5,11 @@
 :root {
    font-family: 'Roboto Condensed', sans-serif;
    /* font-family: 'Anek Devanagari', sans-serif; */
-   color-scheme: light dark;
+   /* color-scheme: light dark; */
+   /* color-scheme: light dark; */
    /* color: rgba(255, 255, 255, 0.87); */
    color: #dedede;
-   /* background-color: #1f1d2b; */
+   background-color: #212023;
    /* background-color: #101014; */
    /* background-color: #242424; */
 
