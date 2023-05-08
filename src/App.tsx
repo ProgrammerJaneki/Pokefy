@@ -17,32 +17,58 @@ function App() {
    const [pageNumber, setPageNumber] = useState<number>(1);
    const [searchQuery, setSearchQuery] = useState<string>('');
 
+   const handleSetSearchQuery = (event: ChangeEvent<HTMLInputElement>) => {
+      console.log('S:', searchQuery);
+      setSearchQuery(event.target.value);
+   };
+
    const getPokemonList = async () => {
       try {
          setLoading(true);
-         const pokemonListData = await axios.get(currentPage);
-         const { results, previous, next } = pokemonListData.data;
-         setNextPage(next);
-         setPrevPage(previous);
-         const pokemonDataList = await Promise.all(
-            results.map(async (result: { url: string }) => {
-               const { data } = await axios.get<PokemonDataModel>(result.url); // I am getting the exact data from this url
-               const pokemonData: PokemonDataModel = {
-                  id: data.id,
-                  name: data.name,
-                  height: data.height,
-                  weight: data.weight,
-                  types: data.types,
-                  abilities: data.abilities,
-                  stats: data.stats,
-                  species: data.species,
-                  sprites: data.sprites,
-               };
-               // console.log(pokemonData.name);
-               return pokemonData;
-            })
-         );
-         setPokemonList(pokemonDataList);
+         const searchUrl = searchQuery
+            ? `https://pokeapi.co/api/v2/pokemon/${searchQuery}`
+            : currentPage;
+         const pokemonListData = await axios.get(searchUrl);
+         if (Array.isArray(pokemonListData.data.results)) {
+            const { results, previous, next } = pokemonListData.data;
+            setNextPage(next);
+            setPrevPage(previous);
+            const pokemonDataList = await Promise.all(
+               results.map(async (result: { url: string }) => {
+                  const { data } = await axios.get<PokemonDataModel>(
+                     result.url
+                  ); // I am getting the exact data from this url
+                  const pokemonData: PokemonDataModel = {
+                     id: data.id,
+                     name: data.name,
+                     height: data.height,
+                     weight: data.weight,
+                     types: data.types,
+                     abilities: data.abilities,
+                     stats: data.stats,
+                     species: data.species,
+                     sprites: data.sprites,
+                  };
+                  // console.log(pokemonData.name);
+                  return pokemonData;
+               })
+            );
+            setPokemonList(pokemonDataList);
+         } else {
+            const { data } = pokemonListData;
+            const pokemonData: PokemonDataModel = {
+               id: data.id,
+               name: data.name,
+               height: data.height,
+               weight: data.weight,
+               types: data.types,
+               abilities: data.abilities,
+               stats: data.stats,
+               species: data.species,
+               sprites: data.sprites,
+            };
+            setPokemonList([pokemonData]);
+         }
          setLoading(false);
       } catch (error) {
          console.log(error);
@@ -50,47 +76,11 @@ function App() {
    };
 
    useEffect(() => {
-      // setLoading(true);
-      // let cancel: any;
-      // axios
-      //    .get(currentPage, {
-      //       cancelToken: new axios.CancelToken((c) => (cancel = c)),
-      //    })
-      //    .then((response) => {
-      //       setLoading(false);
-      //       setNextPage(response.data.next);
-      //       setPrevPage(response.data.previous);
-      //       setPokemonList(
-      //          response.data.results.map((poke: { name: string }) => poke.name)
-      //       );
-      //    })
-      //    .catch((error) => {
-      //       try {
-      //          if (axios.isCancel(error)) {
-      //             console.log('Request Canceled', error.message);
-      //          } else {
-      //             setError('Error fetching Pokemon List');
-      //             console.log(error);
-      //          }
-      //       } catch (e) {
-      //          console.log(e);
-      //       }
-      //    });
-      // return () => {
-      //    cancel();
-      // };
       getPokemonList();
       console.log(nextPage);
-   }, [currentPage]);
+   }, [searchQuery ? searchQuery : currentPage]);
 
    // Pagination | Handlers
-   const handleSetSearchQuery = useCallback(
-      (event: ChangeEvent<HTMLInputElement>) => {
-         console.log('hey');
-         setSearchQuery(event.target.value);
-      },
-      []
-   );
    const handlePrevPage = () => {
       setCurrentPage(prevPage);
       setPageNumber(pageNumber - 1);
