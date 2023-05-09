@@ -7,7 +7,7 @@ interface SearchBarModel {
 }
 
 const SearchBar = ({ handleSetSearchQuery, searchQuery }: SearchBarModel) => {
-   console.log('SEARCH: ', searchQuery);
+   // console.log('SEARCH: ', searchQuery);
    return (
       <>
          <div className="bg-[#29292b] flex items-center p-3 rounded-md text-sm gap-x-2 text-[#dedede]  w-full">

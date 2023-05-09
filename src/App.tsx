@@ -1,9 +1,10 @@
-import { useState, useEffect, Suspense, ChangeEvent, useCallback } from 'react';
+import { useState, useEffect, Suspense, ChangeEvent } from 'react';
 import PokemonList from './components/PokemonList';
 import axios from 'axios';
 import Pagination from './components/Pagination';
 import { PokemonDataModel } from './components/interface/PokemonDataModel';
 import SearchBar from './components/SearchBar';
+import useDebounce from './components/utilities/useDebounce';
 
 function App() {
    const [pokemonList, setPokemonList] = useState<PokemonDataModel[]>([]);
@@ -16,16 +17,18 @@ function App() {
    const [prevPage, setPrevPage] = useState<string>('');
    const [pageNumber, setPageNumber] = useState<number>(1);
    const [searchQuery, setSearchQuery] = useState<string>('');
+   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
    const handleSetSearchQuery = (event: ChangeEvent<HTMLInputElement>) => {
-      console.log('S:', searchQuery);
+      // console.log('S:', searchQuery);
       setSearchQuery(event.target.value);
    };
 
    const getPokemonList = async () => {
+      setError('');
       try {
          setLoading(true);
-         const searchUrl = searchQuery
+         const searchUrl = debouncedSearchQuery
             ? `https://pokeapi.co/api/v2/pokemon/${searchQuery}`
             : currentPage;
          const pokemonListData = await axios.get(searchUrl);
@@ -70,15 +73,25 @@ function App() {
             setPokemonList([pokemonData]);
          }
          setLoading(false);
-      } catch (error) {
-         console.log(error);
+      } catch (err: any) {
+         if (err.response.data === 'Not Found') {
+            setError('No results');
+            console.log('bug');
+         } else {
+            setError('');
+         }
+         setLoading(false);
+         // console.log(err);
+         // console.log('ERROR: ', err.response.data);
       }
    };
 
    useEffect(() => {
       getPokemonList();
-      console.log(nextPage);
-   }, [searchQuery ? searchQuery : currentPage]);
+      // console.log('Next: ',nextPage);
+      // console.log('Error:', error);
+   }, [debouncedSearchQuery, currentPage]);
+   // }, [debouncedSearchQuery ? debouncedSearchQuery : currentPage]);
 
    // Pagination | Handlers
    const handlePrevPage = () => {
