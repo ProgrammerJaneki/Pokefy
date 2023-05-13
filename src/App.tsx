@@ -1,10 +1,15 @@
-import { useState, useEffect, Suspense, ChangeEvent } from 'react';
-import PokemonList from './components/PokemonList';
+import { useState, useEffect, Suspense, ChangeEvent, lazy } from 'react';
+// import PokemonList from './components/PokemonList';
 import axios from 'axios';
-import Pagination from './components/Pagination';
+// import Pagination from './components/Pagination';
 import { PokemonDataModel } from './components/interface/PokemonDataModel';
 import SearchBar from './components/SearchBar';
 import useDebounce from './components/utilities/useDebounce';
+const PokemonList = lazy(() => import('./components/PokemonList'));
+import InfiniteScroll from 'react-infinite-scroll-component';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+import SkeletonLoading from './components/utilities/SkeletonLoading';
 
 function App() {
    const [pokemonList, setPokemonList] = useState<PokemonDataModel[]>([]);
@@ -18,24 +23,25 @@ function App() {
    const [pageNumber, setPageNumber] = useState<number>(1);
    const [searchQuery, setSearchQuery] = useState<string>('');
    const debouncedSearchQuery = useDebounce(searchQuery, 500);
-
    const handleSetSearchQuery = (event: ChangeEvent<HTMLInputElement>) => {
-      // console.log('S:', searchQuery);
       setSearchQuery(event.target.value);
+      // setPokemonList([]);
    };
 
+   // Bug when we delete the content of search bar too quickly it will process the previous value instead
+   // say like i deleted 'aaasdada' too quickly, it'll take the value 'aaasdada' and shown an error on the website
    const getPokemonList = async () => {
       setError('');
       try {
          setLoading(true);
          const searchUrl = debouncedSearchQuery
-            ? `https://pokeapi.co/api/v2/pokemon/${searchQuery}`
+            ? `https://pokeapi.co/api/v2/pokemon/${searchQuery.toLowerCase()}`
             : currentPage;
          const pokemonListData = await axios.get(searchUrl);
          if (Array.isArray(pokemonListData.data.results)) {
             const { results, previous, next } = pokemonListData.data;
-            setNextPage(next);
             setPrevPage(previous);
+            setNextPage(next);
             const pokemonDataList = await Promise.all(
                results.map(async (result: { url: string }) => {
                   const { data } = await axios.get<PokemonDataModel>(
@@ -52,11 +58,11 @@ function App() {
                      species: data.species,
                      sprites: data.sprites,
                   };
-                  // console.log(pokemonData.name);
                   return pokemonData;
                })
             );
-            setPokemonList(pokemonDataList);
+            setPokemonList([...pokemonList, ...pokemonDataList]);
+            setLoading(false);
          } else {
             const { data } = pokemonListData;
             const pokemonData: PokemonDataModel = {
@@ -70,70 +76,88 @@ function App() {
                species: data.species,
                sprites: data.sprites,
             };
-            setPokemonList([pokemonData]);
+            setTimeout(() => {
+               setPokemonList([pokemonData]);
+               setLoading(false);
+            }, 500);
          }
-         setLoading(false);
+         // setLoading(false);
       } catch (err: any) {
          if (err.response.data === 'Not Found') {
-            setError('No results');
-            console.log('bug');
+            setTimeout(() => {
+               setError('No results');
+               setLoading(false);
+            }, 500);
          } else {
             setError('');
          }
-         setLoading(false);
          // console.log(err);
-         // console.log('ERROR: ', err.response.data);
       }
    };
 
    useEffect(() => {
-      getPokemonList();
-      // console.log('Next: ',nextPage);
-      // console.log('Error:', error);
-   }, [debouncedSearchQuery, currentPage]);
-   // }, [debouncedSearchQuery ? debouncedSearchQuery : currentPage]);
+      setPokemonList([]);
+   }, [debouncedSearchQuery]);
 
-   // Pagination | Handlers
-   const handlePrevPage = () => {
-      setCurrentPage(prevPage);
-      setPageNumber(pageNumber - 1);
-   };
+   useEffect(() => {
+      getPokemonList();
+   }, [debouncedSearchQuery, currentPage]);
+
    const handleNextPage = () => {
-      setCurrentPage(nextPage);
-      setPageNumber(pageNumber + 1);
+      setLoading(true);
+      setTimeout(() => {
+         setCurrentPage(nextPage);
+         setPageNumber(pageNumber + 1);
+         console.log('LIST: ', pokemonList);
+      }, 1000);
    };
 
    return (
       <>
-         <div className="bg-[#212023] px-8 py-4 min-h-screen">
-            {/* Header */}
-            <div className="space-y-4">
-               <h1 className="flex justify-center text-lg font-bold">
-                  POKEMON LIST
-               </h1>
-               {/* Search Bar */}
-               <SearchBar
-                  handleSetSearchQuery={handleSetSearchQuery}
-                  searchQuery={searchQuery}
-               />
+         <div className="bg-[#212023] flex justify-center items-start place-items-center w-full px-8 py-4 min-h-screen">
+            <div className="flex flex-col w-full lg:max-w-[900px]">
+               <SkeletonTheme>
+                  {/* Header */}
+                  <header className="space-y-4 w-full ">
+                     <h1 className="flex justify-center text-lg font-bold">
+                        POKEMON LIST
+                     </h1>
+                     {/* Search Bar */}
+                     <SearchBar
+                        handleSetSearchQuery={handleSetSearchQuery}
+                        searchQuery={searchQuery}
+                     />
+                  </header>
+                  {/* Body */}
+                  {/* What I will do tomorrow is set another state that will handle the loading skeleton whenever user is searching
+                   */}
+                  <Suspense
+                     fallback={
+                        <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8 w-full  ">
+                           <SkeletonLoading amount={20} />
+                        </div>
+                     }
+                  >
+                     <div className="w-full ">
+                        <InfiniteScroll
+                           dataLength={pokemonList.length}
+                           next={handleNextPage}
+                           hasMore={!!nextPage}
+                           loader={''}
+                           scrollThreshold={1}
+                        >
+                           <div className="flex justify-center w-full mt-8">
+                              <PokemonList
+                                 pokemon={pokemonList}
+                                 loading={loading}
+                                 error={error}
+                              />
+                           </div>
+                        </InfiniteScroll>
+                     </div>
+                  </Suspense>
+               </SkeletonTheme>
             </div>
-            {/* Body */}
-            <Suspense fallback={<div>Loading....</div>}>
-               <div className="flex justify-center w-full mt-8">
-                  <PokemonList
-                     pokemon={pokemonList}
-                     loading={loading}
-                     error={error}
-                  />
-               </div>
-            </Suspense>
-
-            <Pagination
-               handlePrevPage={handlePrevPage}
-               handleNextPage={handleNextPage}
-               pageNumber={pageNumber}
-               nextPage={nextPage}
-            />
          </div>
       </>
    );

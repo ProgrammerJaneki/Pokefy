@@ -24,7 +24,7 @@ const Pagination = ({
    nextPage,
 }: PaginationProps) => {
    return (
-      <div className="flex justify-center mt-8">
+      <div className="flex justify-center mt-8 ">
          <div className="flex bg-[#16171d] rounded-sm">
             <button
                className={`${

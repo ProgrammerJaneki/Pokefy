@@ -1,6 +1,8 @@
-import React from 'react';
 import PokeCards from './PokeCards';
 import { PokemonDataModel } from './interface/PokemonDataModel';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+import SkeletonLoading from './utilities/SkeletonLoading';
 
 interface PokemonListProps {
    pokemon: PokemonDataModel[];
@@ -11,20 +13,13 @@ interface PokemonListProps {
 const PokemonList = ({ loading, error, pokemon }: PokemonListProps) => {
    return (
       <>
-         {loading && <div>Loading...</div>}
-         {error && <div>{error}</div>}
-         {!loading && !error && (
-            <div className="grid w-full gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4  sm:place-content-center lg:max-w-[900px] h-full">
-               {/* <div className="flex flex-wrap justify-center w-full gap-8 xl:max-w-[1200px]"> */}
+         {!loading && error && <div>{error}</div>}
+         {!error && (
+            <div className="grid w-full gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4    h-full">
                {pokemon.map((item: PokemonDataModel) => {
                   return <PokeCards key={item.id} pokemon={item} />;
                })}
-               {/* </div> */}
-
-               {/* <div className="flex flex-wrap justify-center w-full gap-8 xl:max-w-[1200px]"> */}
-               {/* {pokemonList.map((poke) => {
-                  return <PokeCards key={poke} poke={poke} />;
-               })} */}
+               {loading && <SkeletonLoading amount={12} />}
             </div>
          )}
       </>
