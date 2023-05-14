@@ -2,8 +2,6 @@ import { useState } from 'react';
 import PokeInfo from './PokeInfo';
 import PokemonTypeIcons from './Icons/PokemonTypeIcons';
 import { PokemonDataModel } from './interface/PokemonDataModel';
-import Skeleton from 'react-loading-skeleton';
-import 'react-loading-skeleton/dist/skeleton.css';
 
 interface PokeCardsProps {
    pokemon: PokemonDataModel;
@@ -29,7 +27,6 @@ const PokeCards = ({ pokemon }: PokeCardsProps) => {
       const matchingType = PokemonTypeIcons.find(
          (item) => type.toLowerCase() === item.name
       );
-      const color = '#92bd2d';
       if (matchingType) {
          return (
             <div

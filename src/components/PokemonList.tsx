@@ -1,6 +1,5 @@
 import PokeCards from './PokeCards';
 import { PokemonDataModel } from './interface/PokemonDataModel';
-import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import SkeletonLoading from './utilities/SkeletonLoading';
 

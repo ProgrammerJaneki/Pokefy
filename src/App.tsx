@@ -7,7 +7,7 @@ import SearchBar from './components/SearchBar';
 import useDebounce from './components/utilities/useDebounce';
 const PokemonList = lazy(() => import('./components/PokemonList'));
 import InfiniteScroll from 'react-infinite-scroll-component';
-import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import { SkeletonTheme } from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import SkeletonLoading from './components/utilities/SkeletonLoading';
 
@@ -25,7 +25,6 @@ function App() {
    const debouncedSearchQuery = useDebounce(searchQuery, 500);
    const handleSetSearchQuery = (event: ChangeEvent<HTMLInputElement>) => {
       setSearchQuery(event.target.value);
-      // setPokemonList([]);
    };
 
    // Bug when we delete the content of search bar too quickly it will process the previous value instead
@@ -61,7 +60,11 @@ function App() {
                   return pokemonData;
                })
             );
-            setPokemonList([...pokemonList, ...pokemonDataList]);
+            const newPokemonDataList = pokemonDataList.filter(
+               (pokemon) => !pokemonList.find((p) => p.id === pokemon.id)
+            );
+            setPokemonList([...pokemonList, ...newPokemonDataList]);
+            // setPokemonList([...pokemonList, ...pokemonDataList]);
             setLoading(false);
          } else {
             const { data } = pokemonListData;
@@ -80,6 +83,7 @@ function App() {
                setPokemonList([pokemonData]);
                setLoading(false);
             }, 500);
+            console.log('Single: ', pokemonList);
          }
          // setLoading(false);
       } catch (err: any) {
@@ -108,7 +112,6 @@ function App() {
       setTimeout(() => {
          setCurrentPage(nextPage);
          setPageNumber(pageNumber + 1);
-         console.log('LIST: ', pokemonList);
       }, 1000);
    };
 
