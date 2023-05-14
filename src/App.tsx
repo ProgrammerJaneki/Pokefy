@@ -25,8 +25,6 @@ function App() {
       setSearchQuery(event.target.value);
    };
 
-   // Bug when we delete the content of search bar too quickly it will process the previous value instead
-   // say like i deleted 'aaasdada' too quickly, it'll take the value 'aaasdada' and shown an error on the website
    const getPokemonList = async () => {
       setError('');
       try {
@@ -62,7 +60,6 @@ function App() {
                (pokemon) => !pokemonList.find((p) => p.id === pokemon.id)
             );
             setPokemonList([...pokemonList, ...newPokemonDataList]);
-            // setPokemonList([...pokemonList, ...pokemonDataList]);
             setLoading(false);
          } else {
             const { data } = pokemonListData;
@@ -81,9 +78,7 @@ function App() {
                setPokemonList([pokemonData]);
                setLoading(false);
             }, 500);
-            console.log('Single: ', pokemonList);
          }
-         // setLoading(false);
       } catch (err: any) {
          if (err.response.data === 'Not Found') {
             setTimeout(() => {
@@ -93,7 +88,6 @@ function App() {
          } else {
             setError('');
          }
-         // console.log(err);
       }
    };
 
@@ -130,8 +124,6 @@ function App() {
                      />
                   </header>
                   {/* Body */}
-                  {/* What I will do tomorrow is set another state that will handle the loading skeleton whenever user is searching
-                   */}
                   <Suspense
                      fallback={
                         <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8 w-full  ">
