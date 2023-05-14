@@ -17,7 +17,6 @@ function App() {
       `https://pokeapi.co/api/v2/pokemon/`
    );
    const [nextPage, setNextPage] = useState<string>('');
-   const [prevPage, setPrevPage] = useState<string>('');
    const [pageNumber, setPageNumber] = useState<number>(1);
    const [searchQuery, setSearchQuery] = useState<string>('');
    const debouncedSearchQuery = useDebounce(searchQuery, 500);
@@ -34,8 +33,7 @@ function App() {
             : currentPage;
          const pokemonListData = await axios.get(searchUrl);
          if (Array.isArray(pokemonListData.data.results)) {
-            const { results, previous, next } = pokemonListData.data;
-            setPrevPage(previous);
+            const { results, next } = pokemonListData.data;
             setNextPage(next);
             const pokemonDataList = await Promise.all(
                results.map(async (result: { url: string }) => {
