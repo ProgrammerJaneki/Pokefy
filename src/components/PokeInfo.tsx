@@ -29,7 +29,6 @@ const PokeInfo = ({ handleModalClose, pokemon }: PokeInfoProps) => {
                   >
                      <Icon
                         icon="ic:twotone-keyboard-backspace"
-                        // color="#dedede"
                         width="28"
                         height="28"
                      />
@@ -40,7 +39,6 @@ const PokeInfo = ({ handleModalClose, pokemon }: PokeInfoProps) => {
                   <img
                      className="object-contain"
                      src={pokemon.sprites.front_default}
-                     // src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/22.png?size=200"
                      alt=""
                   />
                </div>
@@ -126,7 +124,6 @@ const PokeInfo = ({ handleModalClose, pokemon }: PokeInfoProps) => {
                      )}
                      {activePokemonInfo === 3 && (
                         <div className="">
-                           {/* {pokemon.types[0].type} */}
                            {pokemon.types.map((type, index) => (
                               <div
                                  key={index}

@@ -26,8 +26,6 @@ const SkeletonLoading = ({ amount }: SkeletonModel) => {
                <section className="flex justify-center gap-x-4 w-full mt-auto">
                   <div className="w-2/4 ">
                      <Skeleton
-                        // width={20}
-                        // height={20}
                         baseColor="#313131"
                         highlightColor="#525252"
                      />

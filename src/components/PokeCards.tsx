@@ -9,10 +9,6 @@ interface PokeCardsProps {
 
 const PokeCards = ({ pokemon }: PokeCardsProps) => {
    const [modalOpen, setModalOpen] = useState<boolean>(false);
-
-   // Main Color
-   // f7b916
-   // text color: b9bcca
    const handleModalOpen = () => {
       setModalOpen(true);
       document.body.style.overflow = 'hidden';

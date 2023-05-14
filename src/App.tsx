@@ -1,7 +1,5 @@
 import { useState, useEffect, Suspense, ChangeEvent, lazy } from 'react';
-// import PokemonList from './components/PokemonList';
 import axios from 'axios';
-// import Pagination from './components/Pagination';
 import { PokemonDataModel } from './components/interface/PokemonDataModel';
 import SearchBar from './components/SearchBar';
 import useDebounce from './components/utilities/useDebounce';
