@@ -135,7 +135,7 @@ function App() {
                            next={handleNextPage}
                            hasMore={!!nextPage}
                            loader={''}
-                           scrollThreshold={1}
+                           scrollThreshold={0}
                         >
                            <div className="flex justify-center w-full mt-8">
                               <PokemonList

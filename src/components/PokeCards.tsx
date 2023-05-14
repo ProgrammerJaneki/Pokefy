@@ -56,7 +56,7 @@ const PokeCards = ({ pokemon }: PokeCardsProps) => {
                      {pokemon.name }
                   </h1>
                   <div className="flex items-center gap-x-1">
-                     {pokemon.types.map((type, index) => {
+                     {pokemon.types.map((type, ) => {
                         return checkPokemonType(type.type.name);
                      })}
                   </div>

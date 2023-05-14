@@ -9,7 +9,7 @@ const SkeletonLoading = ({ amount }: SkeletonModel) => {
    const numCards = Array(amount).fill(1);
    return (
       <>
-         {numCards.map((card, i) => (
+         {numCards.map((_card, i) => (
             <div
                key={i}
                className="bg-[#29292b] h-44 flex flex-col items-center gap-y-4 rounded-lg p-4 text-center  "

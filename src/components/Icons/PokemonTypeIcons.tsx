@@ -1,9 +1,3 @@
-import React from 'react';
-
-// const PokemonTypeIcons = () => {
-//    return <div>PokemonTypeIcons</div>;
-// };
-
 const PokemonTypeIcons = [
    {
       name: 'bug',
