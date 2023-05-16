@@ -11,6 +11,8 @@ import SkeletonLoading from './components/utilities/SkeletonLoading';
 
 function App() {
    const [pokemonList, setPokemonList] = useState<PokemonDataModel[]>([]);
+   const [singlePokemon, setSinglePokemon] = useState<PokemonDataModel[]>([]);
+   const [displayPokemon, setDisplayPokemon] = useState<PokemonDataModel[]>([]);
    const [loading, setLoading] = useState<boolean>(false);
    const [error, setError] = useState<string>('');
    const [currentPage, setCurrentPage] = useState<string>(
@@ -33,6 +35,7 @@ function App() {
             : currentPage;
          const pokemonListData = await axios.get(searchUrl);
          if (Array.isArray(pokemonListData.data.results)) {
+            setSinglePokemon([]);
             const { results, next } = pokemonListData.data;
             setNextPage(next);
             const pokemonDataList = await Promise.all(
@@ -54,10 +57,11 @@ function App() {
                   return pokemonData;
                })
             );
-            const newPokemonDataList = pokemonDataList.filter(
-               (pokemon) => !pokemonList.find((p) => p.id === pokemon.id)
+            const newPokemonList = pokemonList.filter(
+               (pokemon) => !pokemonDataList.find((p) => p.id === pokemon.id)
             );
-            setPokemonList([...pokemonList, ...newPokemonDataList]);
+            setPokemonList([...newPokemonList, ...pokemonDataList]);
+            setDisplayPokemon([...newPokemonList, ...pokemonDataList]);
             setLoading(false);
          } else {
             const { data } = pokemonListData;
@@ -73,7 +77,7 @@ function App() {
                sprites: data.sprites,
             };
             setTimeout(() => {
-               setPokemonList([pokemonData]);
+               setSinglePokemon([pokemonData]);
                setLoading(false);
             }, 500);
          }
@@ -89,8 +93,20 @@ function App() {
       }
    };
 
+
    useEffect(() => {
-      setPokemonList([]);
+      if (singlePokemon.length > 0) {
+         setDisplayPokemon(singlePokemon);
+      } else {
+         setDisplayPokemon(pokemonList);
+      }
+   }, [singlePokemon, pokemonList]);
+
+   useEffect(() => {
+      setCurrentPage(`https://pokeapi.co/api/v2/pokemon/`);
+      setSinglePokemon([])
+      setPokemonList([])
+      setDisplayPokemon([])
    }, [debouncedSearchQuery]);
 
    useEffect(() => {
@@ -110,18 +126,15 @@ function App() {
          <div className="bg-[#212023] flex justify-center items-start place-items-center w-full px-8 py-4 min-h-screen">
             <div className="flex flex-col w-full lg:max-w-[900px]">
                <SkeletonTheme>
-                  {/* Header */}
                   <header className="space-y-4 w-full ">
                      <h1 className="flex justify-center text-lg font-bold">
                         POKEMON LIST
                      </h1>
-                     {/* Search Bar */}
                      <SearchBar
                         handleSetSearchQuery={handleSetSearchQuery}
                         searchQuery={searchQuery}
                      />
                   </header>
-                  {/* Body */}
                   <Suspense
                      fallback={
                         <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8 w-full  ">
@@ -134,12 +147,12 @@ function App() {
                            dataLength={pokemonList.length}
                            next={handleNextPage}
                            hasMore={!!nextPage}
-                           loader={''}
-                           scrollThreshold={0}
+                           loader={null}
+                           scrollThreshold={0.8}
                         >
                            <div className="flex justify-center w-full mt-8">
                               <PokemonList
-                                 pokemon={pokemonList}
+                                 pokemon={displayPokemon}
                                  loading={loading}
                                  error={error}
                               />

@@ -17,8 +17,6 @@ const PokeCards = ({ pokemon }: PokeCardsProps) => {
       setModalOpen(false);
       document.body.style.overflow = 'auto';
    };
-   // Checks which type of pokemon
-   // Checks each index their type
    const checkPokemonType = (type: string) => {
       const matchingType = PokemonTypeIcons.find(
          (item) => type.toLowerCase() === item.name
@@ -36,7 +34,6 @@ const PokeCards = ({ pokemon }: PokeCardsProps) => {
       }
    };
    return (
-      // Main Card
       <>
          <div
             className="bg-[#29292b] hover:bg-[#1f2026] shadow-md cursor-pointer flex flex-col items-center gap-y-4 rounded-lg  p-4 h-50 text-center transition-all duration-150 ease-linear w-full lg:max-w-[300px]"
@@ -45,25 +42,21 @@ const PokeCards = ({ pokemon }: PokeCardsProps) => {
             }}
          >
             <div className="">
-               <img
-                  src={pokemon.sprites.front_default}
-                  alt=""
-               />
+               <img src={pokemon.sprites.front_default} alt="" />
             </div>
             <div className="flex flex-col w-full mt-auto gap-y-2 ">
                <div className="flex items-center justify-center gap-x-4">
                   <h1 className="text-sm text-[#f7b916] font-bold capitalize ">
-                     {pokemon.name }
+                     {pokemon.name}
                   </h1>
                   <div className="flex items-center gap-x-1">
-                     {pokemon.types.map((type, ) => {
+                     {pokemon.types.map((type) => {
                         return checkPokemonType(type.type.name);
                      })}
                   </div>
                </div>
             </div>
          </div>
-         {/* Pokemon Cards Info Moldal */}
          {modalOpen && (
             <PokeInfo handleModalClose={handleModalClose} pokemon={pokemon} />
          )}
